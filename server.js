@@ -1,6 +1,8 @@
 import express from "express";
 import cors from "cors";
+//It allows your backend to be accessed from a different domain (like when your frontend runs on localhost:5173 and backend on localhost:5000).
 import "dotenv/config";
+//So this line ensures your app can read secret values (like PORT, MONGO_URI, etc.) stored in .env.
 import connectDB from "./configs/db.js";
 
 const app=express();
