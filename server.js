@@ -5,6 +5,7 @@ import "dotenv/config";
 //So this line ensures your app can read secret values (like PORT, MONGO_URI, etc.) stored in .env.
 import connectDB from "./configs/db.js";
 import userRouter from "./routes/userRoutes.js";
+import resumeRouter from "./routes/resumeRoutes.js";
 
 const app=express();
 const PORT=process.env.PORT || 3000;
@@ -18,6 +19,7 @@ app.use(cors())
 app.get("/",(req,res)=>
 res.send("Server is live................"));
 app.use("/api/users",userRouter)
+app.use("/api/resumes",resumeRouter)
 
 
 app.listen(PORT,()=>{
