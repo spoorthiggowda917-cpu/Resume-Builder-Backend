@@ -4,6 +4,7 @@ import cors from "cors";
 import "dotenv/config";
 //So this line ensures your app can read secret values (like PORT, MONGO_URI, etc.) stored in .env.
 import connectDB from "./configs/db.js";
+import userRouter from "./routes/userRoutes.js";
 
 const app=express();
 const PORT=process.env.PORT || 3000;
@@ -15,8 +16,9 @@ app.use(express.json())
 app.use(cors())
 
 app.get("/",(req,res)=>
-res.send("Server is live................")
-);
+res.send("Server is live................"));
+app.use("/api/users",userRouter)
+
 
 app.listen(PORT,()=>{
     console.log(`Server is running on port ${PORT}`);

@@ -1,6 +1,6 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken"//(for authentication)
 
 
 const generateToken=(userId)=>{
@@ -22,7 +22,7 @@ export const registerUser = async (req, res) => {
 
         }
 
-        //check if user already exits
+        //check if user already exists
 
         const user = await User.findOne({ email })
         if(user){
@@ -39,6 +39,7 @@ export const registerUser = async (req, res) => {
     //return success mssg
     const token = generateToken(newUser._id)
     newUser.password=undefined;
+    //This line removes the password from the user object so it will not be sent to the frontend.
 
     return res.status(201).json({message:"User created successfully",token,user:newUser})
 
