@@ -1,10 +1,11 @@
 import User from "../models/User.js";
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"//(for authentication)
+import Resume from "../models/Resume.js";
 
 
-const generateToken=(userId)=>{
-    const token = jwt.sign({userId}, process.env.JWT_SECRET,{expiresIn:"7d"})
+const generateToken = (userId) => {
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: "7d" })
     return token;
 
 }
@@ -25,29 +26,29 @@ export const registerUser = async (req, res) => {
         //check if user already exists
 
         const user = await User.findOne({ email })
-        if(user){
-             return res.status(400).json({ message: "User already exists" })
+        if (user) {
+            return res.status(400).json({ message: "User already exists" })
         }
-   
-
-    //create a new user
-    const hashedPassword = await bcrypt.hash(password, 10)
-    const newUser = await User.create({
-        name, email, password: hashedPassword
-    })
-
-    //return success mssg
-    const token = generateToken(newUser._id)
-    newUser.password=undefined;
-    //This line removes the password from the user object so it will not be sent to the frontend.
-
-    return res.status(201).json({message:"User created successfully",token,user:newUser})
-
-}catch (error) {
-    return res.status(400).json({message:error.message})
 
 
-}
+        //create a new user
+        const hashedPassword = await bcrypt.hash(password, 10)
+        const newUser = await User.create({
+            name, email, password: hashedPassword
+        })
+
+        //return success mssg
+        const token = generateToken(newUser._id)
+        newUser.password = undefined;
+        //This line removes the password from the user object so it will not be sent to the frontend.
+
+        return res.status(201).json({ message: "User created successfully", token, user: newUser })
+
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
+
+
+    }
 }
 
 //controller for user login
@@ -60,29 +61,29 @@ export const loginUser = async (req, res) => {
         //check if user  exits
 
         const user = await User.findOne({ email })
-        if(!user){
-             return res.status(400).json({ message: "Invalid email or password" })
-        }
-   
-        //check if password is correct
-
-        if(!user.comparePassword(password)){
+        if (!user) {
             return res.status(400).json({ message: "Invalid email or password" })
         }
 
-    
+        //check if password is correct
 
-    //return success mssg
-    const token = generateToken(user._id)
-    user.password=undefined;
-
-    return res.status(201).json({message:"User Logged in successfully",token,user})
-
-}catch (error) {
-    return res.status(400).json({message:error.message})
+        if (!user.comparePassword(password)) {
+            return res.status(400).json({ message: "Invalid email or password" })
+        }
 
 
-}
+
+        //return success mssg
+        const token = generateToken(user._id)
+        user.password = undefined;
+
+        return res.status(200).json({ message: "User Logged in successfully", token, user })
+
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
+
+
+    }
 }
 
 //controller for getting user by id
@@ -90,23 +91,41 @@ export const loginUser = async (req, res) => {
 
 export const getUserById = async (req, res) => {
     try {
-       
-       const userId=req.userId;
 
-       //check if user exists
-       const user=await User.findOne(userId)
-       if(!user){
-        return res.status(404).json({message:"User not found"})
+        const userId = req.userId;
 
-       }
-   //return user
-   user.password=undefined;
-       
-    return res.status(201).json({user})
+        //check if user exists
+        const user = await User.findOne(userId)
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
 
-}catch (error) {
-    return res.status(400).json({message:error.message})
+        }
+        //return user
+        user.password = undefined;
+
+        return res.status(200).json({ user })
+
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
 
 
+    }
 }
+
+//controller for getting user resumes
+//POST:/api/users/resumes
+
+export const getUserByResumes = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        //return user resumes
+        const resumes = await Resume.find({ userId })
+        return res.status(200).json({ resumes })
+
+    } catch (error) {
+        return res.status(400).json({ message: error.message })
+
+
+    }
 }
